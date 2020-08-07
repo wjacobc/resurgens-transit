@@ -1,89 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, StatusBar, FlatList, ActivityIndicator } from 'react-native';
+import { Text, View, Image, StatusBar, FlatList, ActivityIndicator, RefreshControl, SafeAreaView} from 'react-native';
+import { MartaAppStylesheets } from './css.js';
 import { MartaKey } from './MartaKey.js';
 
-const styles = StyleSheet.create({
-
-    stationName: {
-        color: "white",
-        fontSize: 30,
-        paddingTop: 5,
-        paddingBottom: 5,
-        textAlign: "center",
-    },
-
-    arrivalText: {
-        color: "white",
-        fontSize: 20,
-    },
-    
-    arrivalTimeText: {
-        color: "white",
-        fontSize: 20,
-        marginLeft: "auto",
-        marginRight: 10,
-    },
-
-    viewHeading: {
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 35,
-        paddingTop: 35,
-        paddingLeft: 20,
-    },
-    
-    contentBackground: {
-        flex: 7,
-        backgroundColor: "#222222",
-        alignItems: "center",
-    },
-    
-    stationModule: {
-        height: 150,
-        width: "90%",
-        backgroundColor: "black",
-        margin: 20,
-        marginBottom: 0,
-
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: "white",
-        color: "white",
-    },
-    
-    stationHeader: {
-        alignSelf: "baseline",
-        width: "100%",
-        borderBottomWidth: 2,
-        borderBottomColor: "white"
-    },
-    
-    circle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
-        marginTop: 2,
-        marginRight: 10,
-        marginLeft: 10,
-    },
-    
-    airportIcon: {
-        width: 20,
-        height: 20,
-        marginTop: 2,
-        marginRight: 10,
-        marginLeft: 10,
-    },
-
-    stationArrivals: {
-        flexDirection: "row",
-        marginTop: 5,
-    },
-
-    activityIndicator: {
-        marginTop: 25
-    }
-});
+const styles = MartaAppStylesheets.getStyles();
 
 class TrainArrival {
     constructor(line, destination, time) {
@@ -97,25 +17,49 @@ class TrainArrival {
     }
 }
 
-class StationArrival extends Component {
-    
-    constructor(props) {
-        super(props);
-        this.state = {loading: true, martaResponse: "hello"};
-        this.getDataFromMarta = this.getDataFromMarta.bind(this);
-        this.filterDataFromMarta();
-        this.setState({upcomingTrains: {"DIRECTION": "Loading", "WAITING_TIME": ""}});
-    }
+/*class TrainData {
+    static loaded = false;
+    //static stationDict = this.generateStationDict();
 
-    getDataFromMarta() {
+    static getDataFromMarta() {
         var apiLink = "http://developer.itsmarta.com/RealtimeTrain/RestServiceNextTrain/GetRealtimeArrivals?apikey=" + MartaKey.getKey();
+
         return fetch(apiLink)
             .then(function(response) {
                 return response.json();
             })
             .then(myJson => {
-                this.setState({martaResponse: myJson}, function(){});
+                return myJson;
             });
+    }
+
+    static async generateStationDict() {
+        var dict = {};
+        jsonData = await this.getDataFromMarta();
+
+        for (var arrival of jsonData) {
+            if (arrival.STATION in dict) {
+                dict[arrival.STATION].push(arrival);
+            } else {
+                dict[arrival.STATION] = [arrival];
+            }
+        }
+        this.loaded = true;
+        console.warn(dict);
+        return dict;
+    }
+}*/
+
+class StationArrival extends Component {
+    
+    constructor(props) {
+        super(props);
+        console.warn(this.props.loading);
+        //this.state = {loading: this.props.loading, martaResponse: this.props.arrivals};
+        //this.getDataFromMarta = this.getDataFromMarta.bind(this);
+        this.station = this.props.station.toUpperCase() + " STATION";
+        //this.filterDataFromMarta();
+        this.setState({upcomingTrains: {"DIRECTION": "Loading", "WAITING_TIME": ""}});
     }
 
     matchingStations(station) {
@@ -131,25 +75,22 @@ class StationArrival extends Component {
     }
 
     async filterDataFromMarta() {
-        await this.getDataFromMarta();
         var thisStationOnly = [];
         var destinationDict = {};
-        for (var response of this.state.martaResponse) {
+        for (var response of this.props.arrivals) {
             this.addToDestinationDict(response, destinationDict);
 
             if (this.matchingStations(response.STATION)) {
                 thisStationOnly.push(response);
             }
         }
-        console.warn(destinationDict);
-        var dangList = [];
+        //TODO: destination dict
+        //console.warn(destinationDict);
         for (const [ key, value ] of Object.entries(destinationDict)) {
-            console.warn("jimbabwe");
-            console.warn(key);
+            //console.warn(key);
         }
 
-        this.setState({upcomingTrains: thisStationOnly}, function(){});
-        this.setState({loading: false}, function(){});
+        this.upcomingTrains = thisStationOnly;
     }
 
 
@@ -177,9 +118,10 @@ class StationArrival extends Component {
     }
 
     render() {
-        if (!this.state.loading) {
+        if (!this.props.loading) {
+            this.filterDataFromMarta();
             return (
-                <FlatList data = {this.state.upcomingTrains} renderItem = {this.arrivalRow} />
+                <FlatList data = {this.upcomingTrains} renderItem = {this.arrivalRow} />
             );
         } else {
             return (
@@ -211,40 +153,92 @@ class LineCircle extends Component {
     }
 }
 
-class StationView extends Component {
+/*class StationView extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <View style={styles.stationModule}>
                 <View style={styles.stationHeader}>
-                    <Text style={styles.stationName}>{this.props.station}</Text>
+                    <Text style={styles.stationName}>{this.props.station} {"" + this.props.loading}</Text>
                 </View>
-                <StationArrival station = {this.props.station} />
+                <StationArrival station = {this.props.station} loading = {this.props.loading} arrivals = {this.props.arrivals}/>
            </View>
         );
+    }
+}*/
+
+class TrainStation {
+    constructor(name) {
+        this.name = name;
     }
 }
 
 export default class MartaApp extends Component {
     stationModule = ({item}) => {
         return (
-            <StationView station = {item} />
+            <View style={styles.stationModule}>
+                <View style={styles.stationHeader}>
+                    <Text style={styles.stationName}>{item.name} {"" + this.state.loading}</Text>
+                </View>
+                <StationArrival key = {this.state.response} station = {item.name} loading = {this.state.loading} arrivals = {this.state.response}/>
+           </View>
         );
     }
 
-    stations = ["Sandy Springs", "Ashby", "Midtown"];
+    constructor(props) {
+        super(props);
+        this.state = {stations: [new TrainStation("Ashby"), new TrainStation("Midtown")], response: "",
+                        loading: true, refreshing: false};
+        this.filterDataFromMarta();
+    }
+
+    getDataFromMarta() {
+        var apiLink = "http://developer.itsmarta.com/RealtimeTrain/RestServiceNextTrain/GetRealtimeArrivals?apikey=" + MartaKey.getKey();
+        var test = fetch(apiLink).then(function(response) { return response.json();});
+        return test
+            .then(myJson => {
+                this.setState({response: myJson}, function(){});
+            });
+    }
+
+    async filterDataFromMarta() {
+        await this.getDataFromMarta();
+        //console.warn(this.state.response);
+        //console.warn("Response");
+
+        this.setState({loading: false}, function(){});
+        this.setState({response: this.state.response}, function(){});
+    }
+
 
     render() {
         return (
-            <View style={{flex: 1}}>
-                <StatusBar barStyle="light-content" />
-           	<View style={{flex: 1, backgroundColor: "black", color: "white"}}>
+            <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
+            <StatusBar barStyle="light-content" />
+           	<View style={{height: "8%", backgroundColor: "black", color: "white"}}>
            	    <Text style={styles.viewHeading}>My Stations</Text>
            	</View>
+            <View style= {styles.orangeRect} />
+            <View style= {styles.yellowRect} />
+            <View style= {styles.blueRect} />
            	<View style={styles.contentBackground}>
                 
-                    <FlatList style = {{width: "100%"}} data = {this.stations} renderItem = {this.stationModule} scrollEnabled = {this.stations.length > 3} />
+                    <FlatList style = {{width: "100%"}} data = {this.state.stations} renderItem = {this.stationModule} 
+                        scrollEnabled = {true} refreshControl={
+                            <RefreshControl
+                             onRefresh = {this.filterDataFromMarta}
+                             refreshing = {this.state.loading}
+                            /> }
+                    />
            	</View>
-            </View>
+            </SafeAreaView>
         );
+    }
+
+    handleRefresh() {
+        this.filterDataFromMarta();
     }
 }

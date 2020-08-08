@@ -1,0 +1,49 @@
+[
+    {"name": "North Springs", "lines": ["red"], "bus_served": []},
+    {"name": "Sandy Springs", "lines": ["red"], "bus_served": []},
+    {"name": "Dunwoody", "lines": ["red"], "bus_served": []},
+    {"name": "Medical Center", "lines": ["red"], "bus_served": []},
+    {"name": "Buckhead", "lines": ["red"], "bus_served": []},
+
+    {"name": "Doraville", "lines": ["gold"], "bus_served": []},
+    {"name": "Chamblee", "lines": ["gold"], "bus_served": []},
+    {"name": "Brookhaven", "lines": ["gold"], "bus_served": []},
+    {"name": "Lenox", "lines": ["gold"], "bus_served": []},
+    
+    {"name": "Lindbergh", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Arts Center", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Midtown", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "North Ave", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Civic Center", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Peachtree Center", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Garnett", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "West End", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Oakland City", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Lakewood", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "East Point", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "College Park", "lines": ["red", "gold"], "bus_served": []},
+    {"name": "Airport", "lines": ["red", "gold"], "bus_served": []},
+
+    {"name": "Five Points", "lines": ["red", "gold", "blue", "green"], "bus_served": []},
+
+    {"name": "Hamilton E Holmes", "lines": ["blue"], "bus_served": []},
+    {"name": "West Lake", "lines": ["blue"], "bus_served": []},
+
+    {"name": "Bankhead", "lines": ["green"], "bus_served": []},
+    
+    {"name": "Ashby", "lines": ["blue", "green"], "bus_served": []},
+    {"name": "Vine City", "lines": ["blue", "green"], "bus_served": []},
+    {"name": "Omni Dome", "lines": ["blue", "green"], "bus_served": []},
+
+    {"name": "Georgia State", "lines": ["blue", "green"], "bus_served": []},
+    {"name": "King Memorial", "lines": ["blue", "green"], "bus_served": []},
+    {"name": "Inman Park", "lines": ["blue", "green"], "bus_served": []},
+    {"name": "Edgewood Candler Park", "lines": ["blue", "green"], "bus_served": []},
+
+    {"name": "East Lake", "lines": ["blue"], "bus_served": []},
+    {"name": "Decatur", "lines": ["blue"], "bus_served": []},
+    {"name": "Avondale", "lines": ["blue"], "bus_served": []},
+    {"name": "Kensington", "lines": ["blue"], "bus_served": []},
+    {"name": "Indian Creek", "lines": ["blue"], "bus_served": []}
+
+]

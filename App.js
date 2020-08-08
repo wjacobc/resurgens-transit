@@ -39,8 +39,14 @@ class StationArrival extends Component {
 
     async generateArrivalsList() {
         var thisStationArrivals = [];
+        var rawArrivals = this.props.arrivals[this.station];
 
-        for (var response of this.props.arrivals[this.station]) {
+        if (rawArrivals == undefined) {
+            this.upcomingTrains = thisStationArrivals;
+            return;
+        }
+
+        for (var response of rawArrivals) {
             if (this.matchingStations(response.STATION)) {
                 var arrivalObject = new TrainArrival(response.LINE, response.DESTINATION, response.WAITING_TIME);
                 thisStationArrivals.push(arrivalObject);
@@ -77,7 +83,7 @@ class StationArrival extends Component {
     render() {
         if (!this.props.loading) {
             this.generateArrivalsList();
-            if (this.upcomingTrains == undefined) {
+            if (this.upcomingTrains.length == 0) {
                 return <Text style = {styles.emptyListText}>No upcoming trains. Pull to refresh.</Text>
             }
             return (

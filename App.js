@@ -54,7 +54,6 @@ class StationArrival extends Component {
         }
 
         this.upcomingTrains = thisStationArrivals;
-        console.warn(thisStationArrivals);
     }
 
     arrivalRow = ({item}) => {
@@ -86,6 +85,7 @@ class StationArrival extends Component {
             if (this.upcomingTrains.length == 0) {
                 return <Text style = {styles.emptyListText}>No upcoming trains. Pull to refresh.</Text>
             }
+
             return (
                 <FlatList data = {this.upcomingTrains} renderItem = {this.arrivalRow} />
             );
@@ -107,7 +107,7 @@ class LineCircle extends Component {
         if (this.props.line == "Airport") {
             return (
                 <View>
-                    <ImageBackground source={image} style={styles.image}></ImageBackground>
+                    <ImageBackground source = {image} style = {styles.image}></ImageBackground>
                 </View>
             );
         } else {
@@ -125,12 +125,24 @@ class StationView extends Component {
 
     render() {
         return (
-            <View style={styles.stationModule}>
-                <View style={styles.stationHeader}>
-                    <Text style={styles.stationName}>{this.props.station}</Text>
+            <View style = {styles.stationModule}>
+                <View style = {styles.stationHeader}>
+                    <Text style = {styles.stationName}>{this.props.station}</Text>
                 </View>
                 <StationArrival station = {this.props.station} loading = {this.props.loading} arrivals = {this.props.arrivals}/>
            </View>
+        );
+    }
+}
+
+class ColorLines extends Component {
+    render() {
+        return (
+            <View>
+                <View style = {styles.orangeRect} />
+                <View style = {styles.yellowRect} />
+                <View style = {styles.blueRect} />
+            </View>
         );
     }
 }
@@ -157,7 +169,8 @@ export default class MartaApp extends Component {
 
     getDataFromMarta() {
         var apiLink = "http://developer.itsmarta.com/RealtimeTrain/RestServiceNextTrain/GetRealtimeArrivals?apikey=" + MartaKey.getKey();
-        return fetch(apiLink).then(function(response) { return response.json();})
+        return fetch(apiLink)
+            .then(function(response) { return response.json();})
             .then(myJson => {
                 this.setState({response: myJson}, function(){});
             });
@@ -175,7 +188,6 @@ export default class MartaApp extends Component {
             }
         }
 
-        console.warn(arrivalsByStation);
         this.setState({response: arrivalsByStation});
         this.setState({loading: false}, function(){});
     }
@@ -184,14 +196,13 @@ export default class MartaApp extends Component {
     render() {
         return (
             <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
-            <StatusBar barStyle="light-content" />
-           	<View style={{height: "8%", backgroundColor: "black", color: "white"}}>
-           	    <Text style={styles.viewHeading}>My Stations</Text>
+            <StatusBar barStyle = "light-content" />
+           	<View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+           	    <Text style = {styles.viewHeading}>My Stations</Text>
            	</View>
-            <View style= {styles.orangeRect} />
-            <View style= {styles.yellowRect} />
-            <View style= {styles.blueRect} />
-           	<View style={styles.contentBackground}>
+
+            <ColorLines />
+           	<View style = {styles.contentBackground}>
                 
                     <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.state.stations} renderItem = {this.stationModule} 
                         scrollEnabled = {true} refreshControl = {
@@ -199,6 +210,7 @@ export default class MartaApp extends Component {
                              onRefresh = {() => this.handleRefresh()}
                              refreshing = {this.state.loading}
                             /> }
+                        contentContainerStyle = {{paddingBottom: 40}}
                     />
            	</View>
             </SafeAreaView>

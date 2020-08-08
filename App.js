@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StatusBar, FlatList, ActivityIndicator, 
-        RefreshControl, SafeAreaView, TouchableOpacity } from 'react-native';
+        RefreshControl, SafeAreaView, TouchableOpacity, Button } from 'react-native';
 import { MartaAppStylesheets } from './css.js';
 import { MartaKey } from './MartaKey.js';
+import 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const styles = MartaAppStylesheets.getStyles();
 
@@ -128,17 +131,15 @@ class ColorLines extends Component {
 }
 
 class TrainStation {
-    constructor(name) {
+    constructor(name, lines, bus_served) {
         this.name = name;
+        this.lines = lines;
+        this.bus_served = bus_served;
     }
 }
+const Stack = createStackNavigator();
 
-export default class MartaApp extends Component {
-    stationModule = ({item}) => {
-        return (
-           <StationView station = {item.name} loading = {this.state.loading} arrivals = {this.state.response} />
-        );
-    }
+class HomeScreen extends Component { 
 
     constructor(props) {
         super(props);
@@ -146,6 +147,13 @@ export default class MartaApp extends Component {
                         loading: true, refreshing: false};
         this.filterDataFromMarta();
     }
+
+    stationModule = ({item}) => {
+        return (
+           <StationView station = {item.name} loading = {this.state.loading} arrivals = {this.state.response} />
+        );
+    }
+
 
     getDataFromMarta() {
         var apiLink = "http://developer.itsmarta.com/RealtimeTrain/RestServiceNextTrain/GetRealtimeArrivals?apikey=" + MartaKey.getKey();
@@ -170,41 +178,73 @@ export default class MartaApp extends Component {
 
         this.setState({response: arrivalsByStation});
         this.setState({loading: false}, function(){});
-    }
-
+    } 
 
     render() {
         return (
-            <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
-            <StatusBar barStyle = "light-content" />
-           	<View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
-           	    <Text style = {styles.viewHeading}>My Stations</Text>
-                <TouchableOpacity style = {styles.settingsIcon} onPress = {this.settingsButton}>
-                    <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
-                </TouchableOpacity>
-           	</View>
+        <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
+        <StatusBar barStyle = "light-content" />
+           <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+               <Text style = {styles.viewHeading}>My Stations</Text>
+            <TouchableOpacity style = {styles.settingsIcon} onPress = {() => this.props.navigation.navigate("Manage Stations")}>
+                <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
+            </TouchableOpacity>
+           </View>
 
-            <ColorLines />
-           	<View style = {styles.contentBackground}>
-                
-                    <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.state.stations} renderItem = {this.stationModule} 
-                        scrollEnabled = {true} refreshControl = {
-                            <RefreshControl
-                             onRefresh = {() => this.handleRefresh()}
-                             refreshing = {this.state.loading}
-                            /> }
-                        contentContainerStyle = {{paddingBottom: 40}}
-                    />
-           	</View>
-            </SafeAreaView>
+        <ColorLines />
+        
+           <View style = {styles.contentBackground}>
+            
+                <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.state.stations} renderItem = {this.stationModule} 
+                    scrollEnabled = {true} refreshControl = {
+                        <RefreshControl
+                         onRefresh = {() => this.handleRefresh()}
+                         refreshing = {this.state.loading}
+                        /> }
+                    contentContainerStyle = {{paddingBottom: 40}}
+                />
+           </View>
+        </SafeAreaView>
         );
-    }
+     }
 
     handleRefresh() {
         this.filterDataFromMarta();
     }
 
-    settingsButton() {
-        console.warn("settings button tapped");
+ }
+
+class ManageScreen extends Component {
+    render() {
+        return (
+        <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
+        <StatusBar barStyle = "light-content" />
+           <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+               <Text style = {styles.viewHeading}>Manage Stations</Text>
+           </View>
+
+        <ColorLines />
+        
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text>Details Screen</Text>
+                <Button title = "Back" onPress = {() => this.props.navigation.goBack()} />
+            </View>
+        </SafeAreaView>
+        );
     }
+}
+
+export default class MartaApp extends Component {
+
+    render() {
+        return (
+            <NavigationContainer>
+                <Stack.Navigator initialRouteName="Home" headerMode = "none">
+                    <Stack.Screen name = "Home" component = {HomeScreen} />
+                    <Stack.Screen name = "Manage Stations" component = {ManageScreen} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        );
+    }
+
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Text, View, Image, StatusBar, FlatList, ActivityIndicator, RefreshControl, SafeAreaView } from 'react-native';
+import { Text, View, Image, StatusBar, FlatList, ActivityIndicator, 
+        RefreshControl, SafeAreaView, TouchableOpacity } from 'react-native';
 import { MartaAppStylesheets } from './css.js';
 import { MartaKey } from './MartaKey.js';
 
@@ -97,27 +98,6 @@ class StationArrival extends Component {
     }
 }
 
-class LineCircle extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        if (this.props.line == "Airport") {
-            return (
-                <View>
-                    <ImageBackground source = {image} style = {styles.image}></ImageBackground>
-                </View>
-            );
-        } else {
-            return (
-                <View style = {[styles.circle, {backgroundColor: this.props.line.toLowerCase()}]}></View>
-            );
-        }
-    }
-}
-
 class StationView extends Component {
     constructor(props) {
         super(props);
@@ -199,6 +179,9 @@ export default class MartaApp extends Component {
             <StatusBar barStyle = "light-content" />
            	<View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
            	    <Text style = {styles.viewHeading}>My Stations</Text>
+                <TouchableOpacity style = {styles.settingsIcon} onPress = {this.settingsButton}>
+                    <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
+                </TouchableOpacity>
            	</View>
 
             <ColorLines />
@@ -219,5 +202,9 @@ export default class MartaApp extends Component {
 
     handleRefresh() {
         this.filterDataFromMarta();
+    }
+
+    settingsButton() {
+        console.warn("settings button tapped");
     }
 }

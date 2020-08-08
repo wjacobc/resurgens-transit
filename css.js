@@ -84,6 +84,14 @@ export class MartaAppStylesheets {
                 marginLeft: 10,
             },
 
+            settingsIcon: {
+                width: 30,
+                height: 30,
+                marginTop: -18,
+                marginRight: 30,
+                marginLeft: "auto"
+            },
+
             stationArrivals: {
                 flexDirection: "row",
                 marginTop: 5,

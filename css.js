@@ -12,6 +12,14 @@ export class MartaAppStylesheets {
                 textAlign: "center",
             },
 
+            manageStationName: {
+                color: "white",
+                fontSize: 30,
+                paddingTop: 5,
+                paddingBottom: 5,
+                paddingLeft: 10
+            },
+
             arrivalText: {
                 color: "white",
                 fontSize: 20,
@@ -75,6 +83,14 @@ export class MartaAppStylesheets {
                 marginRight: 10,
                 marginLeft: 10,
             },
+
+            horizontalCircle: {
+                width: 20,
+                height: 20,
+                borderRadius: 10,
+                marginTop: 10,
+                marginLeft: 10,
+            },
             
             airportIcon: {
                 width: 20,
@@ -117,7 +133,47 @@ export class MartaAppStylesheets {
                 width: "110%",
                 height: 5,
                 backgroundColor: "#0292cf"
+            },
+
+            addButton: {
+                height: 90,
+                width: 90,
+                borderRadius: 45,
+                marginTop: 20,
+                marginLeft: "auto",
+                marginRight: "auto",
+                alignItems: "center",
+                backgroundColor: "#444444"
+            },
+
+            manageStationHeading: {
+                alignSelf: "baseline",
+                width: "100%",
+                borderBottomWidth: 2,
+                borderBottomColor: "white",
+                flexDirection: "row",
+            },
+
+            deleteButton: {
+                marginLeft: "auto",
+                marginRight: 20,
+            },
+
+            addButtonText: {
+                fontSize: 65,
+                color: "#ffffff",
+            },
+
+            busListBackground: {
+                marginTop: 10,
+                height: 20,
+                backgroundColor: "#cccccc",
+                borderRadius: 5,
+                paddingBottom: 4,
+                padding: 3,
+                marginLeft: 10
             }
+
         });
     }
 }

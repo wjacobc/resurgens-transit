@@ -6,6 +6,8 @@ import { MartaKey } from './MartaKey.js';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import allStations from './train_stations.json';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const styles = MartaAppStylesheets.getStyles();
 
@@ -137,6 +139,7 @@ class TrainStation {
         this.bus_served = bus_served;
     }
 }
+
 const Stack = createStackNavigator();
 
 class HomeScreen extends Component { 
@@ -177,29 +180,28 @@ class HomeScreen extends Component {
         }
 
         this.setState({response: arrivalsByStation});
-        this.setState({loading: false}, function(){});
+        this.setState({loading: false, refreshing: false}, function(){});
     } 
 
     render() {
         return (
         <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
-        <StatusBar barStyle = "light-content" />
-           <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
-               <Text style = {styles.viewHeading}>My Stations</Text>
-            <TouchableOpacity style = {styles.settingsIcon} onPress = {() => this.props.navigation.navigate("Manage Stations")}>
-                <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
-            </TouchableOpacity>
-           </View>
+            <StatusBar barStyle = "light-content" />
+            <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+                <Text style = {styles.viewHeading}>My Stations</Text>
+                <TouchableOpacity style = {styles.settingsIcon} onPress = {() => this.props.navigation.navigate("Manage Stations")}>
+                    <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
+                </TouchableOpacity>
+            </View>
 
-        <ColorLines />
+            <ColorLines />
         
            <View style = {styles.contentBackground}>
-            
                 <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.state.stations} renderItem = {this.stationModule} 
                     scrollEnabled = {true} refreshControl = {
                         <RefreshControl
                          onRefresh = {() => this.handleRefresh()}
-                         refreshing = {this.state.loading}
+                         refreshing = {this.state.refreshing}
                         /> }
                     contentContainerStyle = {{paddingBottom: 40}}
                 />
@@ -209,12 +211,68 @@ class HomeScreen extends Component {
      }
 
     handleRefresh() {
+        this.setState({refreshing: true});
         this.filterDataFromMarta();
     }
 
  }
 
 class ManageScreen extends Component {
+    trainLineCircle = ({item}) => {
+        return (
+            <View style = {[styles.horizontalCircle, {backgroundColor: item.toLowerCase()}]}></View>
+        );
+    }
+
+    trainListHeader = () => {
+        return (
+            <Image style = {styles.horizontalCircle} source = {require("./train.png")} />
+        );
+    }
+
+    busList = ({item}) => {
+        return (
+            <View style = {styles.busListBackground} >
+                <Text style = {styles.busListText}>{item}</Text>
+            </View>
+        );
+    }
+
+    busListHeader = () => {
+        return (
+            <Image style = {styles.horizontalCircle} source = {require("./bus.png")} />
+        );
+    }
+
+    manageStationModule = ({item}) => {
+        return (
+            <View style = {styles.stationModule}>
+                <View style = {styles.manageStationHeading}>
+                    <Text style = {styles.manageStationName}>{item.name}</Text>
+                    <TouchableOpacity style = {styles.deleteButton} onPress = {() => console.warn("delete button")}>
+                        <Text style = {styles.manageStationName}>×</Text>
+                    </TouchableOpacity>
+                </View>
+                <FlatList data = {item.lines} renderItem = {this.trainLineCircle} horizontal = {true} 
+                    ListHeaderComponent = {this.trainListHeader} />
+                <FlatList data = {item.bus_served} renderItem = {this.busList} 
+                    horizontal = {true} ListHeaderComponent = {this.busListHeader} />
+            </View>
+        );
+    }
+
+    addButton = () => {
+        return (
+            <TouchableOpacity style = {styles.addButton} onPress = {() => console.warn("add button")}>
+                <Text style = {styles.addButtonText}>+</Text>
+            </TouchableOpacity>
+        )
+    }
+
+    componentDidMount() {
+
+    }
+
     render() {
         return (
         <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
@@ -224,11 +282,9 @@ class ManageScreen extends Component {
            </View>
 
         <ColorLines />
-        
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Details Screen</Text>
+        <FlatList style = {{marginBottom: 110}} data = {allStations} renderItem = {this.manageStationModule} 
+            ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 40}} />
                 <Button title = "Back" onPress = {() => this.props.navigation.goBack()} />
-            </View>
         </SafeAreaView>
         );
     }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StatusBar, FlatList, ActivityIndicator, 
-        RefreshControl, SafeAreaView, TouchableOpacity, Button } from 'react-native';
+        RefreshControl, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import { MartaAppStylesheets } from './css.js';
 import { MartaKey } from './MartaKey.js';
 import 'react-native-gesture-handler';
@@ -168,7 +168,7 @@ class HomeScreen extends Component {
     }
 
     async filterDataFromMarta() {
-        await this.getDataFromMarta();
+        //await this.getDataFromMarta();
         arrivalsByStation = {};
 
         for (var arrival of this.state.response) {
@@ -218,6 +218,38 @@ class HomeScreen extends Component {
  }
 
 class ManageScreen extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    deleteButton(station) {
+        console.warn(station);
+        console.warn("deleting " + station.keys);
+    }
+
+    render() {
+        return (
+        <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
+            <StatusBar barStyle = "light-content" />
+            <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+                <Text style = {styles.viewHeading}>Manage Stations</Text>
+            </View>
+
+            <ColorLines />
+            <ManageStationList includeAddButton = {true} navigation = {this.props.navigation}
+                stationsToShow = {allStations.filter(station => station.name.includes("Springs"))}
+                adding = {false} stationActionButton = {this.deleteButton} />
+
+        </SafeAreaView>
+        );
+    }
+}
+
+class ManageStationList extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     trainLineCircle = ({item}) => {
         return (
             <View style = {[styles.horizontalCircle, {backgroundColor: item.toLowerCase()}]}></View>
@@ -238,54 +270,87 @@ class ManageScreen extends Component {
         );
     }
 
+    busListEmpty = ({item}) => {
+        return (
+            <View style = {styles.busListBackground} >
+                <Text style = {styles.busListText}>None</Text>
+            </View>
+        );
+    }
+
     busListHeader = () => {
         return (
             <Image style = {styles.horizontalCircle} source = {require("./bus.png")} />
         );
     }
-
+    
     manageStationModule = ({item}) => {
         return (
             <View style = {styles.stationModule}>
                 <View style = {styles.manageStationHeading}>
                     <Text style = {styles.manageStationName}>{item.name}</Text>
-                    <TouchableOpacity style = {styles.deleteButton} onPress = {() => console.warn("delete button")}>
-                        <Text style = {styles.manageStationName}>×</Text>
+                    <TouchableOpacity style = {styles.deleteButton} onPress = {(item) => this.props.stationActionButton(item)} >
+                        {this.props.adding ?
+                            <Text style = {styles.manageStationName}>+</Text>
+                            :
+                            <Text style = {styles.manageStationName}>×</Text>
+                        }
                     </TouchableOpacity>
                 </View>
                 <FlatList data = {item.lines} renderItem = {this.trainLineCircle} horizontal = {true} 
                     ListHeaderComponent = {this.trainListHeader} />
                 <FlatList data = {item.bus_served} renderItem = {this.busList} 
-                    horizontal = {true} ListHeaderComponent = {this.busListHeader} />
+                    horizontal = {true} ListHeaderComponent = {this.busListHeader} 
+                    ListEmptyComponent = {this.busListEmpty} />
             </View>
         );
     }
 
     addButton = () => {
-        return (
-            <TouchableOpacity style = {styles.addButton} onPress = {() => console.warn("add button")}>
-                <Text style = {styles.addButtonText}>+</Text>
-            </TouchableOpacity>
-        )
-    }
-
-    componentDidMount() {
-
+        if (this.props.includeAddButton) {
+            return (
+                <TouchableOpacity style = {styles.addButton} onPress = {() => this.props.navigation.navigate("Add Station")}>
+                    <Text style = {styles.addButtonText}>+</Text>
+                </TouchableOpacity>
+            );
+        }
+        
+        return null;
     }
 
     render() {
         return (
-        <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
-        <StatusBar barStyle = "light-content" />
-           <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
-               <Text style = {styles.viewHeading}>Manage Stations</Text>
-           </View>
+            <FlatList style = {{marginBottom: 110}} data = {this.props.stationsToShow} renderItem = {this.manageStationModule} 
+                ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 60}} />
+        );
+    }
+}
 
-        <ColorLines />
-        <FlatList style = {{marginBottom: 110}} data = {allStations} renderItem = {this.manageStationModule} 
-            ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 40}} />
-                <Button title = "Back" onPress = {() => this.props.navigation.goBack()} />
-        </SafeAreaView>
+class AddScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {filterText: ""};
+    }
+
+    addButton() {
+        console.warn("adding station button");
+    }
+
+    render() {
+        return (
+            <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
+                <StatusBar barStyle = "light-content" />
+                <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
+                    <Text style = {styles.viewHeading}>Add a Station</Text>
+                </View>
+
+                <ColorLines />
+                <TextInput style = {styles.searchBar} placeholder = "Search for a station" 
+                    onChangeText = {text => this.setState({filterText: text})} />
+                <ManageStationList includeAddButton = {false} 
+                    stationsToShow = {allStations.filter(station => station.name.includes(this.state.filterText))} 
+                    adding = {true} stationActionButton = {this.addButton} />
+            </SafeAreaView>
         );
     }
 }
@@ -298,6 +363,7 @@ export default class MartaApp extends Component {
                 <Stack.Navigator initialRouteName="Home" headerMode = "none">
                     <Stack.Screen name = "Home" component = {HomeScreen} />
                     <Stack.Screen name = "Manage Stations" component = {ManageScreen} />
+                    <Stack.Screen name = "Add Station" component = {AddScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
         );

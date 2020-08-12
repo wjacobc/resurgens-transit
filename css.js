@@ -101,9 +101,9 @@ export class MartaAppStylesheets {
             },
 
             settingsIcon: {
-                width: 30,
-                height: 30,
-                marginTop: -18,
+                width: 40,
+                height: 40,
+                marginTop: -20,
                 marginRight: 30,
                 marginLeft: "auto"
             },
@@ -157,6 +157,7 @@ export class MartaAppStylesheets {
             deleteButton: {
                 marginLeft: "auto",
                 marginRight: 20,
+                marginTop: -2
             },
 
             addButtonText: {
@@ -172,6 +173,24 @@ export class MartaAppStylesheets {
                 paddingBottom: 4,
                 padding: 3,
                 marginLeft: 10
+            },
+
+            busListText: {
+                marginTop: -1,
+                fontStyle: "italic"
+            },
+
+            searchBar: {
+                backgroundColor: "#ffffff", 
+                fontSize: 20,
+                paddingTop: 5, 
+                paddingLeft: 10,
+                paddingBottom: 5, 
+                width: "90%", 
+                borderRadius: 5,
+                marginLeft: "auto",
+                marginRight: "auto",
+                marginTop: 15
             }
 
         });

@@ -220,10 +220,10 @@ class HomeScreen extends Component {
 class ManageScreen extends Component {
     constructor(props) {
         super(props);
+        this.deleteButton = this.deleteButton.bind(this);
     }
 
     deleteButton(station) {
-        console.warn(station);
         console.warn("deleting " + station.keys);
     }
 
@@ -248,6 +248,7 @@ class ManageScreen extends Component {
 class ManageStationList extends Component {
     constructor(props) {
         super(props);
+        this.props.stationActionButton = this.props.stationActionButton.bind(this);
     }
 
     trainLineCircle = ({item}) => {
@@ -348,7 +349,7 @@ class AddScreen extends Component {
                 <TextInput style = {styles.searchBar} placeholder = "Search for a station" 
                     onChangeText = {text => this.setState({filterText: text})} />
                 <ManageStationList includeAddButton = {false} 
-                    stationsToShow = {allStations.filter(station => station.name.includes(this.state.filterText))} 
+                    stationsToShow = {allStations.filter(station => station.name.toLowerCase().includes(this.state.filterText.toLowerCase()))} 
                     adding = {true} stationActionButton = {this.addButton} />
             </SafeAreaView>
         );

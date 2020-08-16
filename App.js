@@ -161,7 +161,6 @@ class HomeScreen extends Component {
         this.setState({stations: allStations.filter(station => stationList.includes(station.name))});
 
         this.props.route.params.savedStations = allStations.filter(station => stationList.includes(station.name)) 
-        console.warn(this.props.route.params);
     }
 
     stationModule = ({item}) => {
@@ -237,12 +236,10 @@ class ManageScreen extends Component {
         super(props);
         this.deleteButton = this.deleteButton.bind(this);
         this.state = {savedStations: this.props.route.params.savedStations, modified: false};
-        console.warn(this.props.route.params);
     }
 
     deleteButton(station) {
         newStationList = this.state.savedStations.filter(newStation => newStation.name != station.name);
-        console.warn(newStationList);
         this.setState({savedStations: newStationList, modified: true});
         stationNames = [];
         newStationList.forEach(element => {

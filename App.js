@@ -148,6 +148,9 @@ class HomeScreen extends Component {
         super(props);
         this.state = {stations: [], response: "",
                         loading: true, refreshing: false};
+        if (this.props.route.params == undefined) {
+            this.props.route.params = {};
+        }
         this.getSavedStations();
         this.filterDataFromMarta();
     }
@@ -155,8 +158,10 @@ class HomeScreen extends Component {
     async getSavedStations() {
         retrievedStations = await AsyncStorage.getItem("savedStations");
         stationList = retrievedStations.split(",");
-        console.warn(stationList);
         this.setState({stations: allStations.filter(station => stationList.includes(station.name))});
+
+        this.props.route.params.savedStations = allStations.filter(station => stationList.includes(station.name)) 
+        console.warn(this.props.route.params);
     }
 
     stationModule = ({item}) => {
@@ -198,7 +203,7 @@ class HomeScreen extends Component {
             <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
                 <Text style = {styles.viewHeading}>My Stations</Text>
                 <TouchableOpacity style = {styles.settingsIcon} 
-                    onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.state.stations})} >
+                    onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.props.route.params.savedStations})} >
                     <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
                 </TouchableOpacity>
             </View>
@@ -206,7 +211,7 @@ class HomeScreen extends Component {
             <ColorLines />
         
            <View style = {styles.contentBackground}>
-                <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.state.stations} renderItem = {this.stationModule} 
+                <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.props.route.params.savedStations} renderItem = {this.stationModule} 
                     scrollEnabled = {true} refreshControl = {
                         <RefreshControl
                          onRefresh = {() => this.handleRefresh()}
@@ -221,6 +226,7 @@ class HomeScreen extends Component {
 
     handleRefresh() {
         this.setState({refreshing: true});
+        this.getSavedStations();
         this.filterDataFromMarta();
     }
 
@@ -230,10 +236,20 @@ class ManageScreen extends Component {
     constructor(props) {
         super(props);
         this.deleteButton = this.deleteButton.bind(this);
+        this.state = {savedStations: this.props.route.params.savedStations};
+        console.warn(this.props.route.params);
     }
 
     deleteButton(station) {
-        console.warn("deleting " + station.keys);
+        newStationList = this.state.savedStations.filter(newStation => newStation.name != station.name);
+        console.warn(newStationList);
+        this.setState({savedStations: newStationList});
+        stationNames = [];
+        newStationList.forEach(element => {
+            stationNames.push(element.name);
+        });
+        stationNamesString = stationNames.join(",");
+        AsyncStorage.setItem("savedStations", stationNamesString);
     }
 
     render() {
@@ -241,12 +257,16 @@ class ManageScreen extends Component {
         <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
             <StatusBar barStyle = "light-content" />
             <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
-                <Text style = {styles.viewHeading}>Manage Stations</Text>
+                <Text style = {styles.viewHeading}>Manage List</Text>
+                <TouchableOpacity style = {styles.settingsIcon} 
+                    onPress = {() => this.props.navigation.navigate("Home", {savedStations: this.state.savedStations})} >
+                    <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                </TouchableOpacity>
             </View>
 
             <ColorLines />
             <ManageStationList includeAddButton = {true} navigation = {this.props.navigation}
-                stationsToShow = {this.props.route.params.savedStations}
+                stationsToShow = {this.state.savedStations}
                 adding = {false} stationActionButton = {this.deleteButton} />
 
         </SafeAreaView>
@@ -346,7 +366,6 @@ class AddScreen extends Component {
 
     addButton(station) {
         newStationList = this.state.savedStations;
-        console.warn(newStationList);
         newStationList.push(station);
         this.setState({savedStations: newStationList});
         stationNames = [];
@@ -363,6 +382,10 @@ class AddScreen extends Component {
                 <StatusBar barStyle = "light-content" />
                 <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
                     <Text style = {styles.viewHeading}>Add a Station</Text>
+                    <TouchableOpacity style = {styles.settingsIcon} 
+                        onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.state.savedStations})} >
+                        <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                    </TouchableOpacity>
                 </View>
 
                 <ColorLines />
@@ -383,7 +406,7 @@ export default class MartaApp extends Component {
     render() {
         return (
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="Home" headerMode = "none"  >
+                <Stack.Navigator initialRouteName="Home" headerMode = "none"  navigationOptions = {{gesturesEnabled: false}} >
                     <Stack.Screen name = "Home" component = {HomeScreen} />
                     <Stack.Screen name = "Manage Stations" component = {ManageScreen} />
                     <Stack.Screen name = "Add Station" component = {AddScreen} />

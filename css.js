@@ -104,7 +104,7 @@ export class MartaAppStylesheets {
                 width: 40,
                 height: 40,
                 marginTop: -20,
-                marginRight: 30,
+                marginRight: 20,
                 marginLeft: "auto"
             },
 

@@ -236,14 +236,14 @@ class ManageScreen extends Component {
     constructor(props) {
         super(props);
         this.deleteButton = this.deleteButton.bind(this);
-        this.state = {savedStations: this.props.route.params.savedStations};
+        this.state = {savedStations: this.props.route.params.savedStations, modified: false};
         console.warn(this.props.route.params);
     }
 
     deleteButton(station) {
         newStationList = this.state.savedStations.filter(newStation => newStation.name != station.name);
         console.warn(newStationList);
-        this.setState({savedStations: newStationList});
+        this.setState({savedStations: newStationList, modified: true});
         stationNames = [];
         newStationList.forEach(element => {
             stationNames.push(element.name);
@@ -260,7 +260,11 @@ class ManageScreen extends Component {
                 <Text style = {styles.viewHeading}>Manage List</Text>
                 <TouchableOpacity style = {styles.settingsIcon} 
                     onPress = {() => this.props.navigation.navigate("Home", {savedStations: this.state.savedStations})} >
+                    {this.state.modified || this.props.route.params.modified ?
+                    <Image style = {styles.settingsIcon} source = {require('./check.png')} />
+                    :
                     <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                    }
                 </TouchableOpacity>
             </View>
 
@@ -367,7 +371,7 @@ class AddScreen extends Component {
     addButton(station) {
         newStationList = this.state.savedStations;
         newStationList.push(station);
-        this.setState({savedStations: newStationList});
+        this.setState({savedStations: newStationList, modified: true});
         stationNames = [];
         this.state.savedStations.forEach(element => {
             stationNames.push(element.name);
@@ -383,8 +387,12 @@ class AddScreen extends Component {
                 <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
                     <Text style = {styles.viewHeading}>Add a Station</Text>
                     <TouchableOpacity style = {styles.settingsIcon} 
-                        onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.state.savedStations})} >
+                        onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.state.savedStations, modified: this.state.modified})} >
+                        {this.state.modified ?
+                        <Image style = {styles.settingsIcon} source = {require('./check.png')} />
+                        :
                         <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                        }
                     </TouchableOpacity>
                 </View>
 

@@ -28,7 +28,7 @@ class StationArrival extends Component {
     constructor(props) {
         super(props);
         this.station = this.props.station.toUpperCase() + " STATION";
-        this.setState({upcomingTrains: {"DIRECTION": "Loading", "WAITING_TIME": ""}});
+        this.state = {upcomingTrains: {"DIRECTION": "Loading", "WAITING_TIME": ""}};
     }
 
     matchingStations(station) {
@@ -93,7 +93,7 @@ class StationArrival extends Component {
             }
 
             return (
-                <FlatList data = {this.upcomingTrains} renderItem = {this.arrivalRow} />
+                <FlatList data = {this.upcomingTrains} renderItem = {this.arrivalRow} keyExtractor = {(item) => item.toString()} />
             );
         } else {
             return (
@@ -151,6 +151,9 @@ class HomeScreen extends Component {
         if (this.props.route.params == undefined) {
             this.props.route.params = {};
         }
+    }
+
+    componentDidMount() {
         this.getSavedStations();
         this.filterDataFromMarta();
     }
@@ -161,6 +164,11 @@ class HomeScreen extends Component {
         this.setState({stations: allStations.filter(station => stationList.includes(station.name))});
 
         this.props.route.params.savedStations = allStations.filter(station => stationList.includes(station.name)) 
+        i = 0;
+        for (station of this.props.route.params.savedStations) {
+            station.key = "" + i;
+            i++;
+        }
     }
 
     stationModule = ({item}) => {
@@ -213,7 +221,7 @@ class HomeScreen extends Component {
                 <FlatList style = {{width: "100%", marginBottom: 130}} data = {this.props.route.params.savedStations} renderItem = {this.stationModule} 
                     scrollEnabled = {true} refreshControl = {
                         <RefreshControl
-                         onRefresh = {() => this.handleRefresh()}
+                         onRefresh = {() => this.handleRefresh}
                          refreshing = {this.state.refreshing}
                         /> }
                     contentContainerStyle = {{paddingBottom: 40}}
@@ -329,10 +337,10 @@ class ManageStationList extends Component {
                     </TouchableOpacity>
                 </View>
                 <FlatList data = {item.lines} renderItem = {this.trainLineCircle} horizontal = {true} 
-                    ListHeaderComponent = {this.trainListHeader} />
+                    ListHeaderComponent = {this.trainListHeader} keyExtractor = {(item) => item.toString()}/>
                 <FlatList data = {item.bus_served} renderItem = {this.busList} 
                     horizontal = {true} ListHeaderComponent = {this.busListHeader} 
-                    ListEmptyComponent = {this.busListEmpty} />
+                    ListEmptyComponent = {this.busListEmpty} keyExtractor = {(item) => item.toString()} />
             </View>
         );
     }
@@ -353,7 +361,8 @@ class ManageStationList extends Component {
     render() {
         return (
             <FlatList style = {{marginBottom: 110}} data = {this.props.stationsToShow} renderItem = {this.manageStationModule} 
-                ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 60}} />
+                ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 60}} 
+                keyExtractor = {(item) => item.name} />
         );
     }
 }
@@ -367,6 +376,8 @@ class AddScreen extends Component {
 
     addButton(station) {
         newStationList = this.state.savedStations;
+        station.key = (parseInt(newStationList[newStationList.length - 1].key) + 1).toString();
+        console.warn(station.key);
         newStationList.push(station);
         this.setState({savedStations: newStationList, modified: true});
         stationNames = [];

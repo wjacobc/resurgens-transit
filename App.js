@@ -406,10 +406,10 @@ export default class MartaApp extends Component {
     render() {
         return (
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="Home" headerMode = "none"  navigationOptions = {{gesturesEnabled: false}} >
-                    <Stack.Screen name = "Home" component = {HomeScreen} />
-                    <Stack.Screen name = "Manage Stations" component = {ManageScreen} />
-                    <Stack.Screen name = "Add Station" component = {AddScreen} />
+                <Stack.Navigator initialRouteName="Home" headerMode = "none" >
+                    <Stack.Screen name = "Home" component = {HomeScreen} options = {{gestureEnabled: false}} />
+                    <Stack.Screen name = "Manage Stations" component = {ManageScreen} options = {{gestureEnabled: false}}/>
+                    <Stack.Screen name = "Add Station" component = {AddScreen} options = {{gestureEnabled: false}}/>
                 </Stack.Navigator>
             </NavigationContainer>
         );

@@ -146,9 +146,17 @@ class HomeScreen extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {stations: [new TrainStation("Ashby"), new TrainStation("Midtown"), new TrainStation("Arts Center"), new TrainStation("College Park")], response: "",
+        this.state = {stations: [], response: "",
                         loading: true, refreshing: false};
+        this.getSavedStations();
         this.filterDataFromMarta();
+    }
+
+    async getSavedStations() {
+        retrievedStations = await AsyncStorage.getItem("savedStations");
+        stationList = retrievedStations.split(",");
+        console.warn(stationList);
+        this.setState({stations: allStations.filter(station => stationList.includes(station.name))});
     }
 
     stationModule = ({item}) => {
@@ -168,7 +176,7 @@ class HomeScreen extends Component {
     }
 
     async filterDataFromMarta() {
-        //await this.getDataFromMarta();
+        await this.getDataFromMarta();
         arrivalsByStation = {};
 
         for (var arrival of this.state.response) {
@@ -189,7 +197,8 @@ class HomeScreen extends Component {
             <StatusBar barStyle = "light-content" />
             <View style = {{height: "8%", backgroundColor: "black", color: "white"}}>
                 <Text style = {styles.viewHeading}>My Stations</Text>
-                <TouchableOpacity style = {styles.settingsIcon} onPress = {() => this.props.navigation.navigate("Manage Stations")}>
+                <TouchableOpacity style = {styles.settingsIcon} 
+                    onPress = {() => this.props.navigation.navigate("Manage Stations", {savedStations: this.state.stations})} >
                     <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
                 </TouchableOpacity>
             </View>
@@ -237,7 +246,7 @@ class ManageScreen extends Component {
 
             <ColorLines />
             <ManageStationList includeAddButton = {true} navigation = {this.props.navigation}
-                stationsToShow = {allStations.filter(station => station.name.includes("Springs"))}
+                stationsToShow = {this.props.route.params.savedStations}
                 adding = {false} stationActionButton = {this.deleteButton} />
 
         </SafeAreaView>
@@ -290,7 +299,7 @@ class ManageStationList extends Component {
             <View style = {styles.stationModule}>
                 <View style = {styles.manageStationHeading}>
                     <Text style = {styles.manageStationName}>{item.name}</Text>
-                    <TouchableOpacity style = {styles.deleteButton} onPress = {(item) => this.props.stationActionButton(item)} >
+                    <TouchableOpacity style = {styles.deleteButton} onPress = {() => this.props.stationActionButton(item)} >
                         {this.props.adding ?
                             <Text style = {styles.manageStationName}>+</Text>
                             :
@@ -310,7 +319,8 @@ class ManageStationList extends Component {
     addButton = () => {
         if (this.props.includeAddButton) {
             return (
-                <TouchableOpacity style = {styles.addButton} onPress = {() => this.props.navigation.navigate("Add Station")}>
+                <TouchableOpacity style = {styles.addButton} 
+                    onPress = {() => this.props.navigation.navigate("Add Station", {savedStations: this.props.stationsToShow})}>
                     <Text style = {styles.addButtonText}>+</Text>
                 </TouchableOpacity>
             );
@@ -330,11 +340,21 @@ class ManageStationList extends Component {
 class AddScreen extends Component {
     constructor(props) {
         super(props);
-        this.state = {filterText: ""};
+        this.state = {filterText: "", savedStations: this.props.route.params.savedStations};
+        this.addButton = this.addButton.bind(this);
     }
 
-    addButton() {
-        console.warn("adding station button");
+    addButton(station) {
+        newStationList = this.state.savedStations;
+        console.warn(newStationList);
+        newStationList.push(station);
+        this.setState({savedStations: newStationList});
+        stationNames = [];
+        this.state.savedStations.forEach(element => {
+            stationNames.push(element.name);
+        });
+        stationNamesString = stationNames.join(",");
+        AsyncStorage.setItem("savedStations", stationNamesString);
     }
 
     render() {
@@ -349,7 +369,9 @@ class AddScreen extends Component {
                 <TextInput style = {styles.searchBar} placeholder = "Search for a station" 
                     onChangeText = {text => this.setState({filterText: text})} />
                 <ManageStationList includeAddButton = {false} 
-                    stationsToShow = {allStations.filter(station => station.name.toLowerCase().includes(this.state.filterText.toLowerCase()))} 
+                    stationsToShow = {allStations.filter(station => 
+                        station.name.toLowerCase().includes(this.state.filterText.toLowerCase())
+                        && !this.state.savedStations.includes(station))} 
                     adding = {true} stationActionButton = {this.addButton} />
             </SafeAreaView>
         );
@@ -361,7 +383,7 @@ export default class MartaApp extends Component {
     render() {
         return (
             <NavigationContainer>
-                <Stack.Navigator initialRouteName="Home" headerMode = "none">
+                <Stack.Navigator initialRouteName="Home" headerMode = "none"  >
                     <Stack.Screen name = "Home" component = {HomeScreen} />
                     <Stack.Screen name = "Manage Stations" component = {ManageScreen} />
                     <Stack.Screen name = "Add Station" component = {AddScreen} />

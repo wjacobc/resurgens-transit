@@ -191,7 +191,13 @@ export class MartaAppStylesheets {
                 marginLeft: "auto",
                 marginRight: "auto",
                 marginTop: 15
+            },
+
+            headerStyle: {
+                backgroundColor: "#000000",
+                marginBottom: 0
             }
+
 
         });
     }

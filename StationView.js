@@ -50,7 +50,7 @@ class StationArrival extends Component {
                 // It's going to the airport, so we use that image instead of a color
                 return (
                 <View style={styles.stationArrivals}>
-                    <Image style = {styles.airportIcon} source={require('./airport.png')} />
+                    <Image style = {styles.airportIcon} source={require('./img/airport.png')} />
                     <Text style = {styles.arrivalText}>{item.destination}</Text>
                     <Text style = {styles.arrivalTimeText}>{item.time}</Text>
                 </View>

@@ -34,9 +34,9 @@ export class ManageScreen extends Component {
                 <TouchableOpacity style = {styles.settingsIcon}
                     onPress = {() => this.props.navigation.navigate("Home", {savedStations: this.state.savedStations})} >
                     {this.state.modified || this.props.route.params.modified ?
-                    <Image style = {styles.settingsIcon} source = {require('./check.png')} />
+                    <Image style = {styles.settingsIcon} source = {require('./img/check.png')} />
                     :
-                    <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                    <Image style = {styles.settingsIcon} source = {require('./img/x.png')} />
                     }
                 </TouchableOpacity>
             </View>
@@ -65,7 +65,7 @@ export class ManageStationList extends Component {
 
     trainListHeader = () => {
         return (
-            <Image style = {styles.horizontalCircle} source = {require("./train.png")} />
+            <Image style = {styles.horizontalCircle} source = {require("./img/train.png")} />
         );
     }
 
@@ -87,7 +87,7 @@ export class ManageStationList extends Component {
 
     busListHeader = () => {
         return (
-            <Image style = {styles.horizontalCircle} source = {require("./bus.png")} />
+            <Image style = {styles.horizontalCircle} source = {require("./img/bus.png")} />
         );
     }
 

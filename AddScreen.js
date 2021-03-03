@@ -39,9 +39,9 @@ export class AddScreen extends Component {
                         onPress = {() => this.props.navigation.navigate("Manage Stations",
                             {savedStations: this.state.savedStations, modified: this.state.modified})} >
                         {this.state.modified ?
-                        <Image style = {styles.settingsIcon} source = {require('./check.png')} />
+                        <Image style = {styles.settingsIcon} source = {require('./img/check.png')} />
                         :
-                        <Image style = {styles.settingsIcon} source = {require('./x.png')} />
+                        <Image style = {styles.settingsIcon} source = {require('./img/x.png')} />
                         }
                     </TouchableOpacity>
                 </View>

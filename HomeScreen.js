@@ -90,7 +90,7 @@ export class HomeScreen extends Component {
                 <TouchableOpacity style = {styles.settingsIcon}
                     onPress = {() => this.props.navigation.navigate("Manage Stations",
                         {savedStations: this.props.route.params.savedStations})} >
-                    <Image style = {styles.settingsIcon} source = {require('./settings.png')} />
+                    <Image style = {styles.settingsIcon} source = {require('./img/settings.png')} />
                 </TouchableOpacity>
             </View>
 

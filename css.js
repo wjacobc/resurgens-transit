@@ -32,7 +32,19 @@ export class MartaAppStylesheets {
                 fontStyle: "italic",
                 textAlign: "center"
             },
-            
+
+            emptyStationListText: {
+                width: "75%",
+                paddingTop: 5,
+                color: "#cccccc",
+                marginTop: 10,
+                marginLeft: "auto",
+                marginRight: "auto",
+                fontSize: 18,
+                fontStyle: "italic",
+                textAlign: "center"
+            },
+
             arrivalTimeText: {
                 color: "white",
                 fontSize: 20,
@@ -43,18 +55,18 @@ export class MartaAppStylesheets {
             viewHeading: {
                 color: "white",
                 fontWeight: "bold",
-                fontSize: 35,
-                paddingTop: "4%",
+                fontSize: 40,
+                paddingTop: "5%",
                 justifyContent: 'flex-end',
                 paddingLeft: 20,
             },
-            
+
             contentBackground: {
                 flex: 7,
                 backgroundColor: "#222222",
                 alignItems: "center",
             },
-            
+
             stationModule: {
                 width: "90%",
                 backgroundColor: "black",
@@ -67,14 +79,14 @@ export class MartaAppStylesheets {
                 borderColor: "white",
                 color: "white",
             },
-            
+
             stationHeader: {
                 alignSelf: "baseline",
                 width: "100%",
                 borderBottomWidth: 2,
                 borderBottomColor: "white"
             },
-            
+
             circle: {
                 width: 20,
                 height: 20,
@@ -91,7 +103,7 @@ export class MartaAppStylesheets {
                 marginTop: 10,
                 marginLeft: 10,
             },
-            
+
             airportIcon: {
                 width: 20,
                 height: 20,
@@ -103,7 +115,7 @@ export class MartaAppStylesheets {
             settingsIcon: {
                 width: 40,
                 height: 40,
-                marginTop: -20,
+                marginTop: -22,
                 marginRight: 20,
                 marginLeft: "auto"
             },
@@ -181,12 +193,12 @@ export class MartaAppStylesheets {
             },
 
             searchBar: {
-                backgroundColor: "#ffffff", 
+                backgroundColor: "#ffffff",
                 fontSize: 20,
-                paddingTop: 5, 
+                paddingTop: 5,
                 paddingLeft: 10,
-                paddingBottom: 5, 
-                width: "90%", 
+                paddingBottom: 5,
+                width: "90%",
                 borderRadius: 5,
                 marginLeft: "auto",
                 marginRight: "auto",

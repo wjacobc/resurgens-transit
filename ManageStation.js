@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, Image, StatusBar, FlatList,
         SafeAreaView, TouchableOpacity } from 'react-native';
+import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MartaAppStylesheets } from './css.js';
 import { ColorLines } from './Utility.js';
@@ -22,6 +23,7 @@ export class ManageScreen extends Component {
             stationNames.push(element.name);
         });
         stationNamesString = stationNames.join(",");
+        console.warn(stationNamesString);
         AsyncStorage.setItem("savedStations", stationNamesString);
     }
 
@@ -57,67 +59,6 @@ export class ManageStationList extends Component {
         this.props.stationActionButton = this.props.stationActionButton.bind(this);
     }
 
-    trainLineCircle = ({item}) => {
-        return (
-            <View style = {[styles.horizontalCircle, {backgroundColor: item.toLowerCase()}]}></View>
-        );
-    }
-
-    trainListHeader = () => {
-        return (
-            <Image style = {styles.horizontalCircle} source = {require("./img/train.png")} />
-        );
-    }
-
-    busList = ({item}) => {
-        return (
-            <View style = {styles.busListBackground} >
-                <Text style = {styles.busListText}>{item}</Text>
-            </View>
-        );
-    }
-
-    busListEmpty = ({item}) => {
-        return (
-            <View style = {styles.busListBackground} >
-                <Text style = {styles.busListText}>None</Text>
-            </View>
-        );
-    }
-
-    busListHeader = () => {
-        return (
-            <Image style = {styles.horizontalCircle} source = {require("./img/bus.png")} />
-        );
-    }
-
-    manageStationModule = ({item}) => {
-        return (
-            <View style = {styles.stationModule}>
-                <View style = {styles.manageStationHeading}>
-
-                    <Text style = {styles.manageStationName}>{item.name}</Text>
-                    <TouchableOpacity style = {styles.deleteButton}
-                        onPress = {() => this.props.stationActionButton(item)}>
-
-                        {this.props.adding ?
-                            <Text style = {styles.manageStationName}>+</Text>
-                            :
-                            <Text style = {styles.manageStationName}>×</Text>
-                        }
-
-                    </TouchableOpacity>
-
-                </View>
-                <FlatList data = {item.lines} renderItem = {this.trainLineCircle} horizontal = {true}
-                    ListHeaderComponent = {this.trainListHeader} keyExtractor = {(item) => item.toString()}/>
-                <FlatList data = {item.bus_served} renderItem = {this.busList}
-                    horizontal = {true} ListHeaderComponent = {this.busListHeader}
-                    ListEmptyComponent = {this.busListEmpty} keyExtractor = {(item) => item.toString()} />
-            </View>
-        );
-    }
-
     addButton = () => {
         if (this.props.includeAddButton) {
             return (
@@ -132,15 +73,80 @@ export class ManageStationList extends Component {
         }
 
         return null;
-    }
+    };
 
     render() {
         return (
             <FlatList style = {{marginBottom: 110}} data = {this.props.stationsToShow}
-                renderItem = {this.manageStationModule}
+                renderItem = { ({item: station}) => (
+                    <ManageStationModule station = {station} adding = {this.props.adding}
+                        stationActionButton = {this.props.stationActionButton}/>
+                )}
                 ListHeaderComponent = {this.addButton} contentContainerStyle = {{paddingBottom: 60}}
                 keyExtractor = {(item) => item.name} />
         );
     }
 }
 
+function ManageStationModule(props) {
+
+    const trainLineCircle = ({item}) => {
+        return (
+            <View style = {[styles.horizontalCircle, {backgroundColor: item.toLowerCase()}]}></View>
+        );
+    }
+
+    const trainListHeader = () => {
+        return (
+            <Image style = {styles.horizontalCircle} source = {require("./img/train.png")} />
+        );
+    }
+
+    const busList = ({item}) => {
+        return (
+            <View style = {styles.busListBackground} >
+                <Text style = {styles.busListText}>{item}</Text>
+            </View>
+        );
+    }
+
+    const busListEmpty = () => {
+        return (
+            <View style = {styles.busListBackground} >
+                <Text style = {styles.busListText}>None</Text>
+            </View>
+        );
+    }
+
+    const busListHeader = () => {
+        return (
+            <Image style = {styles.horizontalCircle} source = {require("./img/bus.png")} />
+        );
+    }
+
+    return (
+        <View style = {styles.stationModule}>
+            <View style = {styles.manageStationHeading}>
+
+                <Text style = {styles.manageStationName}>{props.station.name}</Text>
+                <TouchableOpacity style = {styles.deleteButton}
+                    onPress = {() => props.stationActionButton(props.station)}>
+
+                    {props.adding ?
+                        <Text style = {styles.manageStationName}>+</Text>
+                        :
+                        <Text style = {styles.manageStationName}>×</Text>
+                    }
+
+                </TouchableOpacity>
+
+            </View>
+
+            <FlatList data = {props.station.lines} renderItem = {trainLineCircle} horizontal = {true}
+                    ListHeaderComponent = {trainListHeader} keyExtractor = {(item) => item}  />
+            <FlatList data = {props.station.busServed} renderItem = {busList}
+                horizontal = {true} ListHeaderComponent = {busListHeader}
+                ListEmptyComponent = {busListEmpty} keyExtractor = {(item) => item} />
+        </View>
+    );
+}

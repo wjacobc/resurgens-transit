@@ -31,15 +31,16 @@ export class HomeScreen extends Component {
         if (retrievedStations == undefined) {
             retrievedStations = "";
             AsyncStorage.setItem("savedStations", "");
-        }
-        stationList = retrievedStations.split(",");
-        this.setState({stations: allStations.filter(station => stationList.includes(station.name))});
+            this.props.route.params.savedStations = [];
+        } else {
+            stationList = retrievedStations.split(",");
+            stationObjectList = [];
+            for (station of stationList) {
+                stationObjectList.push(allStations.find(toAdd => station == toAdd.name));
+            }
 
-        this.props.route.params.savedStations = allStations.filter(station => stationList.includes(station.name))
-        i = 0;
-        for (station of this.props.route.params.savedStations) {
-            station.key = "" + i;
-            i++;
+
+            this.props.route.params.savedStations = [...stationObjectList];
         }
     }
 
@@ -107,6 +108,7 @@ export class HomeScreen extends Component {
                         /> }
                     contentContainerStyle = {{paddingBottom: 40}}
                     ListEmptyComponent = {this.emptyStationList}
+                    keyExtractor = {(item) => item.name}
                 />
            </View>
         </SafeAreaView>

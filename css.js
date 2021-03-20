@@ -202,7 +202,8 @@ export class MartaAppStylesheets {
                 borderRadius: 5,
                 marginLeft: "auto",
                 marginRight: "auto",
-                marginTop: 15
+                marginTop: 15,
+                color: "#333333"
             },
 
             headerStyle: {

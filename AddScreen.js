@@ -4,7 +4,7 @@ import { Text, View, Image, StatusBar, FlatList,
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MartaAppStylesheets } from './css.js';
 import { ColorLines } from './Utility.js';
-import { ManageStationList, ManageScreen } from './ManageStation.js';
+import { ManageScreen, ManageStationModule } from './ManageStation.js';
 import allStations from './train_stations.json';
 
 const styles = MartaAppStylesheets.getStyles();
@@ -29,6 +29,13 @@ export class AddScreen extends Component {
         AsyncStorage.setItem("savedStations", stationNamesString);
     }
 
+    stationModule = ({item: station}) => {
+        return (
+            <ManageStationModule station = {station} adding = {true}
+                stationActionButton = {this.addButton} />
+        );
+    }
+
     render() {
         return (
             <SafeAreaView style = {{ flex: 1, backgroundColor: "black", marginBottom: -150}}>
@@ -48,12 +55,14 @@ export class AddScreen extends Component {
 
                 <ColorLines />
                 <TextInput style = {styles.searchBar} placeholder = "Search for a station"
-                    onChangeText = {text => this.setState({filterText: text})} />
-                <ManageStationList includeAddButton = {false}
-                    stationsToShow = {allStations.filter(station =>
+                    onChangeText = {text => this.setState({filterText: text})}
+                    placeholderTextColor = "#999999" />
+
+                <FlatList style = {{ marginBottom: 120 }} data = {allStations.filter(station =>
                         station.name.toLowerCase().includes(this.state.filterText.toLowerCase())
                         && !this.state.savedStations.includes(station))}
-                    adding = {true} stationActionButton = {this.addButton} />
+                        renderItem = {this.stationModule}
+                        keyExtractor = {(item) => item.name} />
             </SafeAreaView>
         );
     }

@@ -13,6 +13,7 @@ A simple, convenient, cross-platform transit app for Atlanta making use of MARTA
 
 ## In Development
 
+- Remake in Expo for faster development and ongoing support
 - Realtime bus data for all 10,000+ bus stops in Metro Atlanta
 - Drag-and-drop ordering of saved stations
 - Geolocate the nearest stop/station for ease of use in less familiar parts of town
